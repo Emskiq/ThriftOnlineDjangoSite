@@ -1,0 +1,16 @@
+----Lozenets----
+PayPal integration - DONE
+Search, adv. search, range search - DONE
+Better main page + browse all products + recently added products + paginator - DONE
+Accounts - DONE
+(unexpected) Fix product images - DONE
+Maybe simple inventory - DONE
+More account info + Translation - DONE
+Similar, recently viewed and popular products - DONE
+Add delivery price to cart - DONE
+Edit your account info - DONE
+Change your account pass + reset pass - DONE 
+Send emails - DONE
+Categories filters - DONE
+In stock filter, fix where the cart/success is and add back to menu - DONE
+Generic pages for the biscuits, rules, etc.. - DONE

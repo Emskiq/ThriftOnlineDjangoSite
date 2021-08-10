@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Резултати | {% endblock %}
+
+{% block content %}
+    <h1 class="title">Резултати</h1>
+    <h2 class="subtitle">Последно търсене: {{ query }}</h2>
+
+    <hr>
+
+    <form method="get" action="{% url 'search' %}">
+        <div class="columns is-multiline">
+            <div class="column is-2">
+                <div class="field">
+                <h2 class="is-size-5 has-text-centered">Търсене</h2>
+
+                    <div class="control">
+                        <input type="text" name="query" class="input" value="{{ query }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <h2 class="is-size-5" style="margin-left: 25%;">Ценови диапазон</h2>
+                <div class="field-group">
+                    <div class="field is-inline-block-desktop">
+                        <div class="control">
+                            <input name="price_from"  class="input" type="number" placeholder="От" value="{% if price_from == -9797979 %} {% else %} {{ price_from }} {% endif %}">
+                        </div>
+                    </div>
+                   
+                   <div class="field is-inline-block-desktop">
+                        <div class="control">
+                            <input name="price_to" class="input" type="number" placeholder="До" value="{% if price_to == 9797979 %} {% else %} {{ price_to }} {% endif %}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-2">
+                <h2 class="is-size-5">Сортиране</h2>
+
+                <div class="field">
+
+                    <div class="control">
+                        <div class="select">
+                            <select name="sorting">
+                                <option value="-date_added"{% if sorting == '-date_added' %} selected{% endif %}>Първо най-новите</option>
+                                <option value="price"{% if sorting == 'price' %} selected{% endif %}>Цена-възходящо</option>
+                                <option value="-price"{% if sorting == '-price' %} selected{% endif %}>Цена-низходящо</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="column is-2">
+                <div class="field">
+                    <h2 class="is-size-5">В наличност</h2>
+
+                    <div class="control">
+                        <input type="checkbox" name="instock"{% if instock %}checked="checked"{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-2">
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-black">Търсене</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <hr>
+    
+    {% with page_obj=page_obj products_paginator=products_paginator %}
+        {% include 'parts/products_list.html' %}
+    {% endwith %}
+     
+{% endblock %}

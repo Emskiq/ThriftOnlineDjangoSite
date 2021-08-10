@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Начало | {% endblock %}
+
+{% block content %}
+    <div class="columns is-mobile is-centered">
+        <div class="column is-half">
+            <a href = "{% url 'category_detail' women_category.slug %}">
+                <figure class="image">
+                    <img src="{% static 'images/categories/women-category-image.jpg' %}">
+                </figure>
+            </a>
+        </div>
+
+        <div class="column is-half">
+            <a href = "{% url 'category_detail' men_category.slug %}">
+                <figure class="image">
+                    <img src="{% static 'images/categories/men-category-image.jpg' %}">
+                </figure>
+            </a>
+        </div>
+    </div>
+    <hr>
+    <div class="recent-product">
+        <h2 class="title">Последно добавени дрехи</h2>
+
+        {% with ra_page as page_obj %}
+                {% include 'parts/products_list.html' %}
+        {% endwith %}
+
+        <div class="columns">
+            <div class="column is-12">
+                <form method="get" action="{% url 'all_products' %}?page=1">
+                    <div class="buttons has-addons is-centered">
+                        <center>
+                            <button type="submit" class="button is-dark is-inverted is-centered">Виж всички</button>
+                        </center>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h2 class="title">Най-разглеждани продукти</h2>
+
+        {% with popular_page as page_obj %}
+                {% include 'parts/products_list.html' %}
+        {% endwith %}
+
+    </div>
+
+{% endblock %}

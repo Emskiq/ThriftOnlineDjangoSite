@@ -1,0 +1,136 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css";
+
+form .helptext {
+    font-size: 1px;
+    color: #ccc;
+}
+
+form ul {
+    display: none;
+}
+
+.no-dec {
+    color: inherit;
+}
+
+ol {
+    margin-left: 1%;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.navbar-item.has-dropdown.is-hoverable {
+    width: 25%;
+}
+
+.navbar-dropdown {
+    width: 100%;
+}
+
+.button {
+    display: flex;
+    width: 100%;
+    justify-content: space-between
+}
+
+.dropdown.is-fullwidth {
+    display: flex;
+}
+
+.dropdown-trigger,
+.dropdown-menu {
+    width: 100%;
+}
+
+#cart-icon {
+    display: inline-block;
+    position: relative;
+}
+
+#cart-total {
+    position: absolute;
+    left: 70%;
+    bottom: 75%;
+    background-color: red;
+    color: white;
+    padding: 10%;
+    font-size: 75%;
+    line-height: 10px;
+    border-radius: 100%;
+}
+
+.wrapper {
+    display: inline-flex;
+    height: 50px;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.wrapper .option {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0 10px;
+    border: 2px solid lightgrey;
+    transition: all 0.3s ease;
+}
+
+.wrapper .option .dot {
+    height: 20px;
+    width: 20px;
+    background: #d9d9d9;
+    border-radius: 50%;
+    position: relative;
+}
+
+.wrapper .option .dot::before {
+    position: absolute;
+    content: "";
+    top: 4px;
+    left: 4px;
+    width: 12px;
+    height: 12px;
+    background: #070707;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(2);
+    transition: all 0.2s ease;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+#option-1:checked:checked~.option-1,
+#option-2:checked:checked~.option-2 {
+    border-color: #070707;
+    background: #070707;
+}
+
+#option-1:checked:checked~.option-1 .dot,
+#option-2:checked:checked~.option-2 .dot {
+    background: #fff;
+}
+
+#option-1:checked:checked~.option-1 .dot::before,
+#option-2:checked:checked~.option-2 .dot::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.wrapper .option span {
+    font-size: 20px;
+    color: #808080;
+}
+
+#option-1:checked:checked~.option-1 span,
+#option-2:checked:checked~.option-2 span {
+    color: #fff;
+}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Влизане | {% endblock %}
+
+{% block content %}
+<div class="columns">
+    <div class="column is-4 is-offset-4">
+        <h1 class="title">Вход</h1>
+
+        <form method="post" action=".">
+            {% csrf_token %}
+    
+            <input type="hidden" name="next" value="{{ next }}">
+    
+            <div class="field">
+                <label>Имейл</label>
+    
+                <div clas="control">
+                    <input type="text" class="input" name="username" id="id_username">
+                </div>
+            </div>
+    
+            <div class="field">
+                <label>Парола</label>
+                
+                <div clas="control">
+                    <input type="password" class="input" name="password" id="id_password">
+                </div>
+            </div>
+    
+            {% if form.errors %}
+                <div class="notification is-danger">
+                    Паролата и имейла не съвпадат, пробвайте отново!
+                </div>
+            {% endif %}
+    
+            <div class="field">
+                <div class="control">
+                    
+                    <p class="is-size-6 has-text-centered" style="margin-bottom: 2%;">Ако нямате профил може да си направите от <a href="{% url 'signup' %}">тук</a></p>
+                    <button class="button is-black">Вход</button>
+                </div>
+            </div>
+        </form>
+
+        <p class="is-size-6 has-text-centered" style="margin-top: 2%;">Ако сте забравили паролата си, възстановете я от <a href="{% url 'password_reset' %}">тук</a></p>
+    </div>
+</div>
+{% endblock %}

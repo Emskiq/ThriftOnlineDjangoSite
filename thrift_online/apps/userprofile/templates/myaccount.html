@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Моят профил | {% endblock %}
+
+{% block content %}
+<div id="productapp">
+    <center>
+        <h1 class="title">Моят акаунт</h1>
+    </center>
+    <hr>
+
+    <div class="columns">
+        <div class="column is-4 is-offset-4">
+            <form method="POST" action=".">
+
+                {% csrf_token %}
+                {{ u_form.as_p }}
+                {{ up_form.as_p }}
+        
+                <div class="field" style="margin-top: 3%;">
+                    <div class="control">
+                        <button class="button is-black">Промяна</button>
+
+                        <div class="columns" style="margin-top: 1%;">
+                            <div class="column is-9">
+                                <a href="{% url 'password_change' %}" class="button is-black">Промяна на парола</a>
+                            </div>
+
+                            <div class="column is-3">
+                                <a href="{% url 'logout' %}" class="button is-danger">Изход</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div id="form erorrs">
+                    {% if u_form.errors %}
+                        {% for field in u_form %}
+                            {% for error in field.errors %}
+                                <div class="notification is-danger">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div id="form erorrs">
+                    {% if up_form.errors %}
+                        {% for field in up_form %}
+                            {% for error in field.errors %}
+                                <div class="notification is-danger">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <h2 class="subtitle">Моите поръчки</h2>
+
+    {% for order in request.user.orders.all %}
+        <article class="message is-light">
+            <div class="message-header">
+                <p>{{ order.created_at }}</p>
+                <p><strong>Статус: </strong>{{ order.status }}</p>
+            </div>
+
+            <div class="message-body">
+                <table class="table is-striped is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Име на продукт</th>
+                            <th>Количество</th>
+                            <th>Цена</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in order.item.all %}
+                            <tr>
+                                <td>{{ item.product.title }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td>Общо</td>
+                            <td>{{ order.get_total_quantity }}</td>
+                            <td>{{ order.paid_amount }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </article>
+    {% empty %}
+        <p>Нямате все още поръчки...</p>
+    {% endfor %}
+</div>
+{% endblock %}

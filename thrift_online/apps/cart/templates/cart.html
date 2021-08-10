@@ -1,0 +1,440 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% block title %}Количка | {% endblock %} 
+
+{% block content %}
+<div id="cartapp">
+
+    <h2 class="title">Количка</h2>
+    <div v-if="products.length > 0">
+        <div class="table is-size-4">
+            <table class="table table is-hoverable">
+                <thead>
+                    <th class="has-text-centered">Продукт</th>
+                    <th></th>
+                    <th>Цена</th>
+                    <th></th>
+                </thead>
+
+                <tbody>
+                    <tr v-for="product in products">
+                        <td>
+                            <figure class="image is-128x128">
+                                <img :src="product.thumbnail">
+                            </figure>
+                        </td>
+                        <td>[[ product.title ]]</td>
+                        <td class="has-text-centered">[[ fixDecimals(product.total_price) ]] лв.</td>
+                        <td>
+                            <figure class="image is-16x16 is-clickable" @click="removeFromCart(product.id)"><img src="{% static 'images/other/x-icon.png' %}"></figure>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Доставка</td>
+                        <td class="has-text-centered">[[ deliveryPrice ]] лв.</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <td>Общо:</td>
+                        <td>
+                            <p class="has-text-centered" v-if="numItems == 1">
+                                [[ numItems ]] продукт
+                            </p>
+                            <p class="has-text-centered" v-else>
+                                [[ numItems ]] продукта
+                            </p>
+                        </td>
+                        <td>[[ fixDecimals(totalCost + deliveryPrice) ]] лв.</td>
+                        <td></td>
+                    </tr>
+
+                    <!-- <tr v-if="coupon_value">
+                        <td>Coupon:</td>
+                        <td></td>
+                        <td>
+                            <p style="margin-left: 25px;">[[ numItems ]]</p>
+                        </td>
+                        <td> [[ totalCostWithCoupon ]]</td>
+                        <td></td>
+                    </tr> -->
+                </tfoot>
+            </table>
+        </div>
+        {% if not request.user.is_authenticated %}
+            <p class="is-size-5">Продължете като гост или <a href="{% url 'login' %}">влезте в профила си</a> или <a href="{% url 'signup' %}">се регистрирайте</a>.</p>
+            <hr>
+        {% endif %}
+        <div class="columns">
+            <div class="column is-6">
+                <div class="field">
+                    <label>Име</label>
+
+                    <div class="control">
+                        <input class="input" type="text" name="first_name" v-model="first_name">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Фамилия</label>
+
+                    <div class="control">
+                        <input class="input" type="text" name="last_name" v-model="last_name">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Телефонен номер</label>
+
+                    <div class="control">
+                        <input class="input" type="text" name="phone" v-model="phone">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Email (не е задължителен)</label>
+
+                    <div class="control">
+                        <input class="input" type="text" name="email" v-model="email">
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="wrapper">
+                    <input type="radio" name="select" id="option-1" @change="onChangeDelivery($event, 1)">
+                    <input type="radio" name="select" id="option-2" @change="onChangeDelivery($event, 2)">
+                    <label for="option-1" class="option option-1">
+                        <div class="dot"></div>
+                        <span>Доставка на място</span>
+                    </label>
+
+                    <label for="option-2" class="option option-2">
+                            <div class="dot"></div>
+                            <span>Доставка до офис</span>
+                    </label>
+                </div>
+
+                <div class="columns" v-if="deliveryOption == 1" style="padding-top: 10px;">
+                    <div class="column is-4">
+                        <div class="field">
+                            <label>Град</label>
+        
+                            <div class="control">
+                                <input class="input" type="text" name="city" v-model="city">
+                            </div>
+                        </div>
+    
+                        <div class="field">
+                            <label>Пощенски код</label>
+        
+                            <div class="control">
+                                <input class="input" type="text" name="zip_code" v-model="zip_code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="column is-8">
+                        <div class="field">
+                            <label>Улица, етаж, апартамент</label>
+        
+                            <div class="control">
+                                <input class="input" type="text" name="address" v-model="address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="deliveryOption == 2" style="padding-top: 20px;">
+                    <div class="field">
+                        <label class="subtitle">Офис на Еконт:</label>
+                        <input type="text" class="input" list="offices" placeholder="Изберете офис..." style="margin-top: 10px;" v-model="office">
+                        <datalist id="offices">
+                            <select>
+                                {% include 'econt_offices_o.html' %}
+                            </select>
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column is-4">
+                <a class="button is-black is-medium" v-on:click="buy('atArr')">Поръчай и плати при доставка</a>
+            </div>
+
+            <div class="column is-4">
+                <button class="button is-black is-medium" v-on:click="buy('stripe')">Поръчай и плати с карта</button>
+            </div>
+
+            <div class="column is-4">
+                <div id="paypal-button-container" class="mt-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else>
+        <p>Количката Ви е празна. :(</p>
+    </div>
+
+    <div v-if="errors.length > 0">
+        <article class="message is-danger" v-for="error in errors">
+            <div class="message-header">
+              <p>Грешка:</p>
+            </div>
+            <div class="message-body">
+               [[ error ]]
+            </div>
+        </article>
+    </div>
+
+</div>
+{% endblock %} 
+
+{% block scripts %}
+
+<script type="application/javascript" src="https://www.paypal.com/sdk/js?client-id={{ pub_key_paypal }}&disable-funding=credit,card"></script>
+<script type="application/javascript" src="https://js.stripe.com/v3/"></script>
+
+<script>
+    var products_string = [{{products_string | safe}}];
+
+    console.log(products_string);
+
+    var productapp = new Vue({
+        el: '#cartapp',
+        delimiters: ['[[', ']]'],
+        store: store,
+        data() {
+            return {
+                products: products_string,
+                deliveryOption: 0,
+                deliveryPrice: 6,
+                first_name: '{{first_name}}',
+                last_name: '{{last_name}}',
+                email: '{{email}}',
+                address: '{{address}}',
+                zip_code: '{{zip_code}}',
+                city: '{{city}}',
+                phone: '{{phone}}',
+                office: '{{office}}',
+                errors: [],
+            }
+        },
+        mounted() {
+            console.log('Mounted');
+            const amount = (this.totalCost + this.deliveryPrice).toString();
+
+            paypal.Buttons({
+                onClick: () => {
+                    if (this.validateForm() > 0) {
+                        return false;
+                    }
+                },
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: amount
+                            }
+                        }]
+                    })
+                },
+                onApprove: (data, actions) => {
+                    const formdata = {
+                        'first_name': this.first_name,
+                        'last_name': this.last_name,
+                        'email': this.email,
+                        'address': this.address,
+                        'zip_code': this.zip_code,
+                        'city': this.city,
+                        'office': this.office,
+                        'phone': this.phone,
+                        'deliveryPrice': this.deliveryPrice,
+                        'gateway': 'paypal',
+                        'order_id': data.orderID
+                    };
+
+                    return actions.order.capture().then(function(details) {
+                        fetch('/api/create_checkout_session/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(formdata)
+                        })
+                        .then(function(response) {
+                            return response.json()
+                        })
+                        .then(function(result) {
+                            window.location.href = '/cart/success/';
+                        })
+                        .catch(function(error) {
+                            console.log('error:', error);
+                        });
+                    });
+                },
+                style: {
+                    color: 'black',
+                }
+            }).render('#paypal-button-container');
+        },
+        computed: {
+            numItems: function() {
+                return store.state.numItems
+            },
+            totalCost: function() {
+                return store.state.totalCost
+            },
+        },
+        methods: {
+            validateForm() {
+                this.errors = [];
+                if(this.deliveryOption === 0) {
+                    this.errors.push('Изберете опция на доставка')
+                }
+                if (this.first_name === ''){
+                    this.errors.push('Полето "Име" е празно');
+                }
+                if (this.last_name === ''){
+                    this.errors.push('Полето "Фамилия" е празно');
+                }
+                if (this.address === '' && this.deliveryOption === 1){
+                    this.errors.push('Полето "Адрес" е празно');
+                }
+                if (this.zip_code === '' && this.deliveryOption === 1){
+                    this.errors.push('Полето "Пощенски код" е празно');
+                }
+                if (this.city === '' && this.deliveryOption === 1){
+                    this.errors.push('Полето "Град" е празно');
+                }
+                if (this.phone === ''){
+                    this.errors.push('Полето "Телефон" е празно');
+                }
+                if(this.office === '' && this.deliveryOption === 2){
+                    this.errors.push('Полето "Офис на Еконт" е празно');
+                }
+
+                return this.errors.length;
+            },
+            
+            onChangeDelivery(event, option) {
+                if (option === 1) {
+                    this.deliveryOption = 1;
+                }
+                else if (option === 2){
+                    this.deliveryOption = 2;
+                }
+            },
+
+            fixDecimals(number) {
+                var tempNumber = parseFloat(number);
+                return tempNumber.toFixed(2);
+            },
+
+            removeFromCart(product_id) {
+                console.log('Product_id:', product_id);
+
+                var data = {
+                    'product_id': product_id
+                };
+
+                fetch('/api/remove_from_cart/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token}}',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(data)
+                    })
+                    .then((response) => {
+                        console.log(response)
+
+                        var product = this.products.filter(product => product.id == product_id);
+                        store.commit('changeTotalCost', -parseFloat(product[0].price));
+
+                        this.products = this.products.filter(product => product.id !== product_id)
+                        store.commit('increment', -1);
+
+                    })
+                    .catch(function(error) {
+                        console.log('Error 2');
+                        console.log(error)
+                    })
+            },
+
+            buy(gateway) {
+                var data = {
+                        'first_name': this.first_name,
+                        'last_name': this.last_name,
+                        'email': this.email,
+                        'address': this.address,
+                        'zip_code': this.zip_code,
+                        'city': this.city,
+                        'phone': this.phone,
+                        'office': this.office,
+                        'deliveryPrice': this.deliveryPrice,
+                        'gateway': gateway,
+                };
+
+                if (this.validateForm() === 0) {
+                    if (gateway === 'stripe') {
+                        var stripe = Stripe('{{pub_key_stripe}}');
+
+                        fetch('/api/create_checkout_session/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(data)
+                        })
+                        .then(function(response) {
+                            return response.json()
+                        })
+                        .then(function(session) {
+                            return stripe.redirectToCheckout({ sessionId: session.session.id })
+                        })
+                        .then(function(result) {
+                            if (result.error) {
+                                alert(result.error.message)
+                            }
+                        })
+                        .catch(function(error) {
+                            console.log('Error:', error);
+                        });
+                    }
+                    else if (gateway === 'atArr') {
+                        fetch('/api/create_checkout_session/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(data)
+                        })
+                        .then(function(response) {
+                            return response.json()
+                        })
+                        .then(function(session) {
+                            window.location.replace(session.session);
+                        })
+                        .catch(function(error) {
+                            console.log('Error:', error);
+                        });
+                    }
+                }
+            },
+        }
+    });
+</script>
+{% endblock %}

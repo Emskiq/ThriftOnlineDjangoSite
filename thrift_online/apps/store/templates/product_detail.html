@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} | {% endblock %}
+
+{% block content %}
+
+    <div id="productapp">
+        <div class="columns">
+            <div class="column is-7">
+                <img :src="mainImage">
+            </div>
+
+            <div class="column is-4">
+                <h1 class="title">{{ product.title }}</h1>
+                <h4 class="subtitle">Цена: {{ product.price | floatformat:2 }} лв.</h4>
+    
+                {% if product.description %}
+                    <p>{{ product.description|linebreaks }}</p>
+                {% endif %}
+                <p class="buttons">
+                    <button class="button is-rounded is-black" v-if="inCart == 'True'" disabled>
+                        <span></span>
+                        <span>Продуктът е в количката Ви!</span>
+                        <span></span>
+                    </button>
+
+                    <button class="button is-rounded is-black" v-if="numAvaible == '0'" disabled>
+                        <span></span>
+                        <span>Продуктът не е в наличност!</span>
+                        <span></span>
+                    </button>
+
+                    <button @click="addToCart({{ product.id }})" class="button is-rounded is-black" v-if="inCart == 'False' && numAvaible != '0'">
+                        <span class="icon">
+                            <i class="fab fa-plus"><img src="{% static 'images/other/plus-sign.jpg' %}"></i>
+                        </span>
+                        <span>Добави в количка</span>
+                    </button>
+                </p>
+
+                <article class="message is-success" v-if="showMessage">
+                    <div class="message-body">
+                        Продуктът е добавен в количката!
+                    </div>
+                </article>
+            </div>
+
+            {% if product.images.all %}
+                <div class="column is-1">
+                    <div v-for="image in images">
+                        <figure class="image is-128x128">
+                            <img :src="image.thumbnail" @click="changeMainImage(image.image)">
+                        </figure>
+                        <hr>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <hr>
+
+        <h2 class="title">Подобни продукти продукти</h2>
+
+        {% with related_products_page as page_obj %}
+                {% include 'parts/products_list.html' %}
+        {% endwith %}
+       
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+        var tempMainImage = '{{ product.image.url }}';
+        console.log('{{product.num_available}}');
+
+        var productapp = new Vue({
+            el: '#productapp',
+            store: store,
+            delimiters: ['[[',']]'],
+            data(){
+                return{
+                    inCart: '{{product.in_cart}}',
+                    numAvaible: '{{product.num_available}}',
+                    showMessage: false,
+                    mainImage: tempMainImage,
+                    images: [{{ imagesstring|safe }}],
+                }
+            },
+            mounted(){
+                console.log('Mounted');
+            },
+            methods: {
+                changeMainImage(image) {
+                    this.mainImage = image;
+                },
+
+                addToCart(product_id) {
+                    console.log('Product_id:', product_id);
+
+                    var data = {
+                        'product_id': product_id,
+                        'update': false,
+                        'quantity': 1
+                    };
+
+                    fetch('/api/add_to_cart/', {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token}}',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(data)
+                    })
+                    .then((response) => {
+                        store.commit('increment', 1);
+
+                        this.inCart = 'True';
+                        
+                        this.showMessage = true;
+                        setTimeout(() => {
+                            this.showMessage = false;
+                        }, 1500);
+                    })
+                    .catch(function (error){
+                        console.log('Error 2');
+                        console.log(error)
+                    })
+                }
+            }
+        });
+    </script>
+{% endblock%}

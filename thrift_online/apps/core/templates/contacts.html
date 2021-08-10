@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Контакти | {% endblock %}
+
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bulma Version 0.9.0-->
+        <link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css" />
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+            integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    </head>
+    <body>
+        <section class="hero is-fullheight">
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <div class="columns is-8 is-variable ">
+                        <div class="column is-two-thirds has-text-left">
+                            <h1 class="title is-1">Контакти</h1>
+                            <p class="is-size-4">Свържете се с нас посредством имейл, профилите ни в социалните мрежи или по телефон: +359 87 678 8005</p>
+                            <div class="social-media">
+                                <div class="columns" style="margin-top: 1%;">
+                                    <div class="column is-2">
+                                        <a href="https://facebook.com" target="_blank" class="button is-light is-large"><i class="fa fa-facebook-square" aria-hidden="true"></i></a>
+                                    </div>
+                                    <div class="column is-2">
+                                        <a href="https://instagram.com" target="_blank" class="button is-light is-large"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                                    </div>
+                                    <div class="column is-2">
+                                        <a href="https://twitter.com" target="_blank" class="button is-light is-large"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-one-third has-text-left">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="field">
+                                    <label class="label">Имейл</label>
+                                    <div class="control">
+                                        <input class="input is-medium" type="text" name="message-email" id="message-email">
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Име</label>
+                                    <div class="control">
+                                        <input class="input is-medium" type="text" name="message-name" id="message-name">
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Тема</label>
+                                    <div class="control">
+                                        <input class="input is-medium" type="text" name="message-subject" id="message-subject">
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Съобщение</label>
+                                    <div class="control">
+                                        <textarea type="textarea" class="textarea is-medium" name="message" id="message" placeholder="Въведете вашето запитване тук"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="control">
+                                    <button type="submit" class="button is-black is-fullwidth has-text-weight-medium is-medium">Изпрати</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+<div class="columns is-multiline">
+    {% for p in page_obj.object_list %}
+        <div class="column is-2">
+            <a href="{% url 'product_detail' p.category.slug p.slug %}">
+                <div class="card has-text-centered">
+                    <div class="card-image">
+                        <figure class="image">
+                        <img src="{{ p.get_thumbnail }}" alt="Placeholder image">
+                        </figure>
+                        
+                        <p class="title is-6">{{p.title}}</p>
+                        <p class="subtitle is-6">{{p.price | floatformat:2}} лв.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="paginator">
+    
+    <nav class="pagination is-centered is-rounded">
+        {% if page_obj.has_previous %}
+            <a class="pagination-previous" href="?{% if query %}query={{ query }}&{% endif %}{% if price_from %}price_from={{ price_from }}&{% endif %}{% if price_to %}price_to={{ price_to }}&{% endif %}{% if sorting %}sorting={{ sorting }}&{% endif %}{% if instock %}instock={{ instock }}&{% endif %}page={{ page_obj.previous_page_number }}">Предишна страница</a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a class="pagination-next" href="?{% if query %}query={{ query }}&{% endif %}{% if price_from %}price_from={{ price_from }}&{% endif %}{% if price_to %}price_to={{ price_to }}&{% endif %}{% if sorting %}sorting={{ sorting }}&{% endif %}{% if instock %}instock={{ instock }}&{% endif %}page={{ page_obj.next_page_number }}">Следваща страница</a>
+        {% endif %}
+
+        <ul class="pagination-list">
+            {% for page in products_paginator.page_range %}
+                <li><a class="pagination-link{% ifequal page page_obj.number %} is-current{% endifequal %}"
+                href = "?{% if query %}query={{ query }}&{% endif %}{% if price_from %}price_from={{ price_from }}&{% endif %}{% if price_to %}price_to={{ price_to }}&{% endif %}{% if sorting %}sorting={{ sorting }}&{% endif %}{% if instock %}instock={{ instock }}&{% endif %}page={{ page }}">{{ page|stringformat:"d" }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
